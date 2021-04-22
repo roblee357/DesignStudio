@@ -32,3 +32,9 @@ build/Release
 node_modules
 tmp/
 blob-local-storage/
+
+# Package-lock
+package-lock.json
+
+# any python compiles
+*.pyc
