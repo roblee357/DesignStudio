@@ -42,6 +42,7 @@ define([
         this._widget.onNodeClick = function (id) {
             // Change the current active object
             WebGMEGlobal.State.registerActiveObject(id);
+            console.log('clicked');
         };
     };
 
@@ -121,25 +122,48 @@ define([
         const elementIds = smNode.getChildrenIds();
         const sm = {init: null, states:{}};
         elementIds.forEach(elementId => {
+           
             const node = self._client.getNode(elementId);
             // the simple way of checking type
-            if (node.isTypeOf(META['Place'])) {
+            if (node.isTypeOf(META['Place']) ) {
                 //right now we only interested in states...
-                const state = {name: node.getAttribute('name'), next:{}, position: node.getRegistry('position'), isEnd: node.isTypeOf(META['End'])};
+                const state = {place: true, tokens: node.getAttribute('tokens'), name: node.getAttribute('name'), next:{}, position: node.getRegistry('position'), isEnd: node.isTypeOf(META['End'])};
                 // one way to check meta-type in the client context - though it does not check for generalization types like State
                 if ('Init' === self._client.getNode(node.getMetaTypeId()).getAttribute('name')) {
                     sm.init = elementId;
                 }
-
                 // this is in no way optimal, but shows clearly what we are looking for when we collect the data
                 elementIds.forEach(nextId => {
                     const nextNode = self._client.getNode(nextId);
                     if(nextNode.isTypeOf(META['Transition']) && nextNode.getPointerId('src') === elementId) {
-                        state.next[nextNode.getAttribute('event')] = nextNode.getPointerId('dst');
+                        state.next[nextNode.getAttribute('event')] = nextNode.getPointerId('dst'); 
+                    }
+                    if(nextNode.isTypeOf(META['Place2Trans']) && nextNode.getPointerId('src') === elementId) {
+                        state.next[nextNode.getPointerId('dst')] = nextNode.getPointerId('dst');   // state.next[nextNode.getAttribute('event')] = nextNode.getPointerId('dst');
                     }
                 });
                 sm.states[elementId] = state;
             }
+
+            if ( node.isTypeOf(META['Trans'])) {
+                const state = {place: false, name: node.getAttribute('name'), next:{}, input:{}, position: node.getRegistry('position'), isEnd: node.isTypeOf(META['End'])};
+                elementIds.forEach(nextId => {
+                    const nextNode = self._client.getNode(nextId);
+                    if(nextNode.isTypeOf(META['Trans2Place']) && nextNode.getPointerId('src') === elementId) {
+                        state.next[nextNode.getPointerId('dst')] = nextNode.getPointerId('dst');
+                     //   state.input[nextNode.getPointerId('src')] = nextNode.getPointerId('src');
+                    }
+                });
+                elementIds.forEach(inputId => {
+                    const nextNode = self._client.getNode(inputId);
+                    if(nextNode.isTypeOf(META['Place2Trans']) && nextNode.getPointerId('dst') === elementId) {
+                     //   state.next[nextNode.getPointerId('dst')] = nextNode.getPointerId('dst');
+                        state.input[nextNode.getPointerId('src')] = nextNode.getPointerId('src');
+                    }
+                });
+                sm.states[elementId] = state;
+            }
+
         });
         sm.setFireableEvents = this.setFireableEvents;
 

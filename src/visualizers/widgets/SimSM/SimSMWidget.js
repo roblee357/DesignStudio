@@ -35,7 +35,7 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
             width : width,
             height: height,
             model: this._jointSM,
-            interactive: true
+            interactive: false
         });
 
         // add event calls to elements
@@ -45,6 +45,7 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
             if (self._webgmeSM) {
                 // console.log(self._webgmeSM.id2state[currentElement.id]);
                 self._setCurrentState(self._webgmeSM.id2state[currentElement.id]);
+                self._getInputTokens(self._webgmeSM.id2state[currentElement.id]);
             }
         });
 
@@ -91,12 +92,14 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
                     }
                 });
             } else {
+                if (sm.states[stateId].place){
                 vertex = new joint.shapes.standard.Circle({
                     position: sm.states[stateId].position,
+                    //tokens: sm.states[stateId].tokens,
                     size: { width: 60, height: 60 },
                     attrs: {
                         label : {
-                            text: sm.states[stateId].name,
+                            text: sm.states[stateId].tokens,
                             //event: 'element:label:pointerdown',
                             fontWeight: 'bold',
                             //cursor: 'text',
@@ -110,6 +113,27 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
                         }
                     }
                 });
+            } else {
+                vertex = new joint.shapes.standard.Rectangle({
+                    position: sm.states[stateId].position,
+                    size: { width: 60, height: 60 },
+                    attrs: {
+                        label : {
+                            text: sm.states[stateId].name,
+                            //event: 'element:label:pointerdown',
+                            fontWeight: 'bold',
+                            //cursor: 'text',
+                            //style: {
+                            //    userSelect: 'text'
+                            //}
+                        },
+                        body: {
+                            strokeWidth: 1,
+                            cursor: 'pointer'
+                        }
+                    }
+                });
+            }
             }
             vertex.addTo(self._jointSM);
             sm.states[stateId].joint = vertex;
@@ -143,7 +167,7 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
                         },
                         attrs: {
                             text: {
-                                text: event,
+                               // text: event,
                                 fontWeight: 'bold'
                             }
                         }
@@ -193,6 +217,32 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
     SimSMWidget.prototype._setCurrentState = function(newCurrent) {
         this._webgmeSM.current = newCurrent;
         this._decorateMachine();
+    };
+
+    SimSMWidget.prototype._getInputTokens = function(newCurrent) {
+        const sm = this._webgmeSM;
+        
+        console.log( sm.current, sm.states[sm.current].input);
+
+        const inputPlaces = sm.states[sm.current].input;
+        var fireable = true;
+        for (const [key, value] of Object.entries(inputPlaces)) {
+            console.log(`${key}: ${value}`, sm.states[value].tokens);
+            if (sm.states[value].tokens == 0) {fireable = false }
+          };
+          console.log("fireable:",fireable)
+        
+        if (fireable){
+            const outputPlaces = sm.states[sm.current].next;
+            for (const [key, value] of Object.entries(outputPlaces)) {
+                sm.states[value].tokens = sm.states[value].tokens + 1
+                console.log("outputs",`${key}: ${value}`, sm.states[value].tokens);
+              };  
+            for (const [key, value] of Object.entries(inputPlaces)) {
+                sm.states[value].tokens = sm.states[value].tokens - 1;
+              };              
+            this._decorateMachine();
+        }
     };
     
 
