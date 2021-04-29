@@ -38,16 +38,15 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
             interactive: false
         });
 
-        // // add event calls to elements
-        // this._jointPaper.on('element:pointerdblclick', function(elementView) {
-        //     const currentElement = elementView.model;
-        //     // console.log(currentElement);
-        //     if (self._webgmeSM) {
-        //         // console.log(self._webgmeSM.id2state[currentElement.id]);
-        //         self._setCurrentState(self._webgmeSM.id2state[currentElement.id]);
-        //         self._getInputTokens(self._webgmeSM.id2state[currentElement.id]);
-        //     }
-        // });
+        // add event calls to elements
+        this._jointPaper.on('element:pointerdblclick', function(elementView) {
+            const currentElement = elementView.model;
+            // console.log(currentElement);
+            if (self._webgmeSM) {
+                // console.log(self._webgmeSM.id2state[currentElement.id]);
+                self.doubleclickaction();
+            }
+        });
 
         // SINGLE CLICK add event calls to elements
         this._jointPaper.on('element:pointerclick', function(elementView) {
@@ -154,9 +153,7 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
                 pos.x -= xadj;
                 pos.y -= yadj;
                 vertex_disks.push(vertex_disk);
-                
               }
-            
             
             } else {
                 vertex = new joint.shapes.standard.Rectangle({
@@ -276,6 +273,10 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
     };
 
 
+    SimSMWidget.prototype.doubleclickaction = function(newCurrent){
+        this.initMachine(this._webgmeSM);
+    };
+    
     
     SimSMWidget.prototype._addTokens = function(newCurrent) {
         const sm = this._webgmeSM;
