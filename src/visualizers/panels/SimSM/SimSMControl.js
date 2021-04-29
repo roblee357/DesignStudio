@@ -127,6 +127,7 @@ define([
             // the simple way of checking type
             if (node.isTypeOf(META['Place']) ) {
                 //right now we only interested in states...
+
                 const state = {place: true, tokens: node.getAttribute('tokens'), name: node.getAttribute('name'), next:{}, position: node.getRegistry('position'), isInit: node.isTypeOf(META['Init']), isEnd: node.isTypeOf(META['End'])};
                 // one way to check meta-type in the client context - though it does not check for generalization types like State
                 if ('Init' === self._client.getNode(node.getMetaTypeId()).getAttribute('name')) {
@@ -146,7 +147,7 @@ define([
             }
 
             if ( node.isTypeOf(META['Trans'])) {
-                const state = {place: false, name: node.getAttribute('name'), next:{}, input:{}, position: node.getRegistry('position')};
+                const state = {place: false, fireable: false, name: node.getAttribute('name'), next:{}, input:{}, position: node.getRegistry('position')};
                 elementIds.forEach(nextId => {
                     const nextNode = self._client.getNode(nextId);
                     if(nextNode.isTypeOf(META['Trans2Place']) && nextNode.getPointerId('src') === elementId) {
@@ -154,11 +155,16 @@ define([
                      //   state.input[nextNode.getPointerId('src')] = nextNode.getPointerId('src');
                     }
                 });
+                
+                
                 elementIds.forEach(inputId => {
-                    const nextNode = self._client.getNode(inputId);
-                    if(nextNode.isTypeOf(META['Place2Trans']) && nextNode.getPointerId('dst') === elementId) {
-                     //   state.next[nextNode.getPointerId('dst')] = nextNode.getPointerId('dst');
-                        state.input[nextNode.getPointerId('src')] = nextNode.getPointerId('src');
+                    const inputNode = self._client.getNode(inputId);
+                    if(inputNode.isTypeOf(META['Place2Trans']) && inputNode.getPointerId('dst') === elementId) {
+                     //   state.next[inputNode.getPointerId('dst')] = inputNode.getPointerId('dst');
+                     var token_count = self._client.getNode(inputNode.getPointerId('src')).getAttribute('tokens');   
+                     console.log("inputnode:",token_count);
+                        state.input[inputNode.getPointerId('src')] = inputNode.getPointerId('src');
+                        if (token_count > 0) {state.fireable = true};
                     }
                 });
                 sm.states[elementId] = state;
