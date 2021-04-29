@@ -127,7 +127,7 @@ define([
             // the simple way of checking type
             if (node.isTypeOf(META['Place']) ) {
                 //right now we only interested in states...
-                const state = {place: true, tokens: node.getAttribute('tokens'), name: node.getAttribute('name'), next:{}, position: node.getRegistry('position'), isEnd: node.isTypeOf(META['End'])};
+                const state = {place: true, tokens: node.getAttribute('tokens'), name: node.getAttribute('name'), next:{}, position: node.getRegistry('position'), isInit: node.isTypeOf(META['Init']), isEnd: node.isTypeOf(META['End'])};
                 // one way to check meta-type in the client context - though it does not check for generalization types like State
                 if ('Init' === self._client.getNode(node.getMetaTypeId()).getAttribute('name')) {
                     sm.init = elementId;
@@ -146,7 +146,7 @@ define([
             }
 
             if ( node.isTypeOf(META['Trans'])) {
-                const state = {place: false, name: node.getAttribute('name'), next:{}, input:{}, position: node.getRegistry('position'), isEnd: node.isTypeOf(META['End'])};
+                const state = {place: false, name: node.getAttribute('name'), next:{}, input:{}, position: node.getRegistry('position')};
                 elementIds.forEach(nextId => {
                     const nextNode = self._client.getNode(nextId);
                     if(nextNode.isTypeOf(META['Trans2Place']) && nextNode.getPointerId('src') === elementId) {

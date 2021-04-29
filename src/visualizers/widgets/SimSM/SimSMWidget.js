@@ -49,6 +49,17 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
             }
         });
 
+        // SINGLE CLICK add event calls to elements
+        this._jointPaper.on('element:pointerclick', function(elementView) {
+            const currentElement = elementView.model;
+            // console.log(currentElement);
+            if (self._webgmeSM) {
+                // console.log(self._webgmeSM.id2state[currentElement.id]);
+                self._setCurrentState(self._webgmeSM.id2state[currentElement.id]);
+                self._addTokens(self._webgmeSM.id2state[currentElement.id]);
+            }
+        });
+
         this._webgmeSM = null;
     };
 
@@ -75,7 +86,7 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
                     size: { width: 20, height: 20 },
                     attrs: {
                         body: {
-                            fill: '#333333',
+                            fill: '#8de653',
                             cursor: 'pointer'
                         }
                     }
@@ -109,6 +120,7 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
                         },
                         body: {
                             strokeWidth: 3,
+                            // fill: '#8de653',
                             cursor: 'pointer'
                         }
                     }
@@ -209,6 +221,7 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
         const sm = this._webgmeSM;
         Object.keys(sm.states).forEach(stateId => {
             sm.states[stateId].joint.attr('body/stroke', '#333333');
+            sm.states[stateId].joint.attr('label/text', sm.states[stateId].tokens);
         });
         sm.states[sm.current].joint.attr('body/stroke', 'blue');
         sm.setFireableEvents(Object.keys(sm.states[sm.current].next));
@@ -219,11 +232,46 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
         this._decorateMachine();
     };
 
-    SimSMWidget.prototype._getInputTokens = function(newCurrent) {
+    // SimSMWidget.prototype._getInputTokens = function(newCurrent) {
+    //     const sm = this._webgmeSM;
+        
+
+    //     if (!sm.states[sm.current].place){
+    //     console.log( sm.current, sm.states[sm.current].input);
+    //     const inputPlaces = sm.states[sm.current].input;
+    //     var fireable = true;
+    //     for (const [key, value] of Object.entries(inputPlaces)) {
+    //         console.log(`${key}: ${value}`, sm.states[value].tokens);
+    //         if (sm.states[value].tokens == 0) {fireable = false }
+    //       };
+    //       console.log("fireable:",fireable)
+        
+    //     if (fireable){
+    //         const outputPlaces = sm.states[sm.current].next;
+    //         for (const [key, value] of Object.entries(outputPlaces)) {
+    //             sm.states[value].tokens = sm.states[value].tokens + 1
+    //             console.log("outputs",`${key}: ${value}`, sm.states[value].tokens);
+    //           };  
+    //         for (const [key, value] of Object.entries(inputPlaces)) {
+    //             sm.states[value].tokens = sm.states[value].tokens - 1;
+    //           };              
+    //         this._decorateMachine();
+    //     };
+    // };
+
+    // if (sm.states[sm.current].place){
+    //     sm.states[sm.current].tokens = sm.states[sm.current].tokens + 1;
+    //     console.log("sm.states[sm.current].tokens:",sm.states[sm.current].tokens);
+    //         this._decorateMachine();
+    // };
+    // };
+    
+    SimSMWidget.prototype._addTokens = function(newCurrent) {
         const sm = this._webgmeSM;
         
-        console.log( sm.current, sm.states[sm.current].input);
 
+        if (!sm.states[sm.current].place){
+        console.log( sm.current, sm.states[sm.current].input);
         const inputPlaces = sm.states[sm.current].input;
         var fireable = true;
         for (const [key, value] of Object.entries(inputPlaces)) {
@@ -242,9 +290,16 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
                 sm.states[value].tokens = sm.states[value].tokens - 1;
               };              
             this._decorateMachine();
-        }
+        };
     };
-    
+
+    if (sm.states[sm.current].place){
+        sm.states[sm.current].tokens = sm.states[sm.current].tokens + 1;
+        console.log("sm.states[sm.current].tokens:",sm.states[sm.current].tokens);
+            this._decorateMachine();
+    };
+    };
+
 
     /* * * * * * * * Visualizer event handlers * * * * * * * */
 
