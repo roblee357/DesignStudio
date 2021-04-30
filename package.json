@@ -23,6 +23,6 @@
   },
   "dependencies": {
     "jointjs": "^3.3.1",
-    "webgme-bindings": "latest"
+    "webgme-bindings": "^1.2.1"
   }
 }

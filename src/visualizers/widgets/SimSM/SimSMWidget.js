@@ -9,6 +9,7 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
 
     var WIDGET_CLASS = 'sim-s-m';
 
+
     function SimSMWidget(logger, container) {
         this._logger = logger.fork('Widget');
 
@@ -21,6 +22,8 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
     }
 
     SimSMWidget.prototype._initialize = function () {
+        var first_run = true; // for assigning inital state 
+        let init_machineDescriptor = null;  // initialize inital state saver 
         console.log(joint);
         var width = this._el.width(),
             height = this._el.height(),
@@ -36,6 +39,8 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
             height: height,
             model: this._jointSM,
             interactive: false
+
+        
         });
 
         // add event calls to elements
@@ -68,6 +73,12 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
 
     // State Machine manipulating functions called from the controller
     SimSMWidget.prototype.initMachine = function (machineDescriptor) {
+        // Save an instance of the initial machine description for resetting.
+        if (this.first_run){
+            let init_machineDescriptor = Object.assign({}, machineDescriptor);
+            this.first_run = false;
+        }
+
         const self = this;
         console.log(machineDescriptor);
 
@@ -249,8 +260,9 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
     };
 
     SimSMWidget.prototype.resetMachine = function () {
-        this._webgmeSM.current = this._webgmeSM.init;
+        // this._webgmeSM.current = this._webgmeSM.init;
         this._decorateMachine();
+        this.initMachine(this.init_machineDescriptor);
     };
 
     SimSMWidget.prototype._decorateMachine = function() {
@@ -305,6 +317,7 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
                 if (sm.states[value].tokens < 1){sm.states[sm.current].fireable = false}
               };              
             this._decorateMachine();
+            this.initMachine(this._webgmeSM);
         };
     };
 
