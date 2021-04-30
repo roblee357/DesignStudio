@@ -147,7 +147,7 @@ define(['jointjs', 'css!./styles/SimSMWidget.css'], function (joint) {
                 const yadj = Math.sin(i/token_count2 * 2 * Math.PI) * 20 + 28;
                 pos.x += xadj;
                 pos.y += yadj;
-                console.log(pos.x,pos.y,sm.states[stateId].position.x,sm.states[stateId].position.y);
+                // console.log(pos.x,pos.y,sm.states[stateId].position.x,sm.states[stateId].position.y);
 
                 vertex_disk = new joint.shapes.standard.Circle({
                     position: pos,

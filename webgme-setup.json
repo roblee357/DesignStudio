@@ -13,6 +13,10 @@
       "ReachCheck": {
         "src": "src/plugins/ReachCheck",
         "test": "test/plugins/ReachCheck"
+      },
+      "MyPythonPlugin": {
+        "src": "src/plugins/MyPythonPlugin",
+        "test": "test/plugins/MyPythonPlugin"
       }
     },
     "seeds": {
