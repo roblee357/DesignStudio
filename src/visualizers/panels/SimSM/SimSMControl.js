@@ -280,15 +280,15 @@ define([
         this._toolbarItems.push(toolBar.addSeparator());
 
         /************** Go to hierarchical parent button ****************/
-        this.$btnReachCheck = toolBar.addButton({
+        this.$btnClassificationCheck = toolBar.addButton({
             title: 'Check state machine reachability properties',
             icon: 'glyphicon glyphicon-question-sign',
             clickFn: function (/*data*/) {
-                const context = self._client.getCurrentPluginContext('ReachCheck',self._currentNodeId, []);
+                const context = self._client.getCurrentPluginContext('ClassificationCheck',self._currentNodeId, []);
                 // !!! it is important to fill out or pass an empty object as the plugin config otherwise we might get errors...
                 context.pluginConfig = {};
                 self._client.runServerPlugin(
-                    'ReachCheck', 
+                    'ClassificationCheck', 
                     context, 
                     function(err, result){
                         // here comes any additional processing of results or potential errors.
@@ -297,7 +297,7 @@ define([
                 });
             }
         });
-        this._toolbarItems.push(this.$btnReachCheck);
+        this._toolbarItems.push(this.$btnClassificationCheck);
 
         this.$btnResetMachine = toolBar.addButton({
             title: 'Reset simulator',

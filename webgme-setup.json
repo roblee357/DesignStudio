@@ -10,9 +10,9 @@
       }
     },
     "plugins": {
-      "ReachCheck": {
-        "src": "src/plugins/ReachCheck",
-        "test": "test/plugins/ReachCheck"
+      "ClassificationCheck": {
+        "src": "src/plugins/ClassificationCheck",
+        "test": "test/plugins/ClassificationCheck"
       },
       "MyPythonPlugin": {
         "src": "src/plugins/MyPythonPlugin",
